@@ -65,6 +65,6 @@ app.post('/upload', function(req, res){
 
 });
 
-var server = app.listen(8000, function(){
-  console.log('Server listening on port 8000');
+var server = app.listen(80, function(){
+  console.log('Server listening on port 80');
 });
