@@ -4,6 +4,8 @@ var path = require('path');
 var formidable = require('formidable');
 var fs = require('fs');
 
+var port = process.env.PORT || 8000; // first change
+
 /*var azure = require('azure-storage');
 var blobService = azure.createBlobService();
 
@@ -65,6 +67,6 @@ app.post('/upload', function(req, res){
 
 });
 
-var server = app.listen(3000, function(){
+var server = app.listen(port, function(){
   console.log('Server listening on port 80');
 });
