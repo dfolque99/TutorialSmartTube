@@ -6,18 +6,16 @@ var fs = require('fs');
 
 var port = process.env.PORT || 8000; // first change
 
-/*var azure = require('azure-storage');
+var azure = require('azure-storage');
 var blobService = azure.createBlobService();
 
-blobService.createContainerIfNotExists('taskcontainer', {
-  publicAccessLevel: 'blob'
-}, function(error, result, response) {
+blobService.createContainerIfNotExists('mycontainer', { publicAccessLevel: 'blob'}, function(error, result, response) {
   if (!error) {
     // if result = true, container was created.
     // if result = false, container already existed.
   }
 });
-*/
+
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.get('/', function(req, res){
@@ -45,11 +43,12 @@ app.post('/upload', function(req, res){
   // rename it to it's orignal name
   form.on('file', function(field, file) {
     fs.rename(file.path, path.join(form.uploadDir, file.name));
-	/*blobService.createBlockBlobFromLocalFile('mycontainer', 'taskblob', file.path, function(error, result, response) {
+	blobService.createBlockBlobFromLocalFile('mycontainer', 'taskblob', path.join(form.uploadDir, file.name), function(error, result, response) {
 	  if (!error) {
+		res.end(JSON.stringify(result));
 	    // file uploaded
 	  }
-	});*/
+	});
   });
 
   // log any errors that occur
