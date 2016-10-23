@@ -6,8 +6,10 @@ var fs = require('fs');
 
 var port = process.env.PORT || 8000; // first change
 
+var accessKey = '2MCKpWE5Zwa1uq0A9/jRyJRW+SKCNH7DzTwXc8DYPPDnefWUqV89Z4TIz3AvYsAWdp8uyv2+5mJOBACBIxcPgg==';
+var storageAccount = 'tutorialsmarttube';
 var azure = require('azure-storage');
-var blobService = azure.createBlobService();
+var blobService = azure.createBlobService(storageAccount, accessKey);
 
 blobService.createContainerIfNotExists('mycontainer', { publicAccessLevel: 'blob'}, function(error, result, response) {
   if (!error) {
