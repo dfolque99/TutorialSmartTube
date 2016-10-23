@@ -5,7 +5,7 @@ var formidable = require('formidable');
 var fs = require('fs');
 
 var port = process.env.PORT || 8000; // first change
-
+/*
 var azure = require('azure-storage');
 var blobService = azure.createBlobService();
 
@@ -15,7 +15,7 @@ blobService.createContainerIfNotExists('mycontainer', { publicAccessLevel: 'blo
     // if result = false, container already existed.
   }
 });
-
+*/
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.get('/', function(req, res){
