@@ -4,7 +4,7 @@ var path = require('path');
 var formidable = require('formidable');
 var fs = require('fs');
 
-var azure = require('azure-storage');
+/*var azure = require('azure-storage');
 var blobService = azure.createBlobService();
 
 blobService.createContainerIfNotExists('taskcontainer', {
@@ -15,7 +15,7 @@ blobService.createContainerIfNotExists('taskcontainer', {
     // if result = false, container already existed.
   }
 });
-
+*/
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.get('/', function(req, res){
@@ -43,11 +43,11 @@ app.post('/upload', function(req, res){
   // rename it to it's orignal name
   form.on('file', function(field, file) {
     fs.rename(file.path, path.join(form.uploadDir, file.name));
-	blobService.createBlockBlobFromLocalFile('mycontainer', 'taskblob', file.path, function(error, result, response) {
+	/*blobService.createBlockBlobFromLocalFile('mycontainer', 'taskblob', file.path, function(error, result, response) {
 	  if (!error) {
 	    // file uploaded
 	  }
-	});
+	});*/
   });
 
   // log any errors that occur
