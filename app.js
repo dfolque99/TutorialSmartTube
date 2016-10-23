@@ -22,7 +22,7 @@ app.get('/', function(req, res){
   res.sendFile(path.join(__dirname, 'views/index.html'));
 });
 
-app.get("/contacts/:id", function(req, res) {
+app.get("/contacts/:id", function(req, res, next) {
   res.writeHead(200, {'Content-Type': 'application/json; charset=utf-8'});
   res.end("Hola id " + req.params.id);
   return next();
