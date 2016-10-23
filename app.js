@@ -5,7 +5,7 @@ var formidable = require('formidable');
 var fs = require('fs');
 
 var port = process.env.PORT || 8000; // first change
-
+/*
 var accessKey = '2MCKpWE5Zwa1uq0A9/jRyJRW+SKCNH7DzTwXc8DYPPDnefWUqV89Z4TIz3AvYsAWdp8uyv2+5mJOBACBIxcPgg==';
 var storageAccount = 'tutorialsmarttube';
 var azure = require('azure-storage');
@@ -16,7 +16,7 @@ blobService.createContainerIfNotExists('mycontainer', { publicAccessLevel: 'blo
     // if result = true, container was created.
     // if result = false, container already existed.
   }
-});
+});*/
 
 app.use(express.static(path.join(__dirname, 'public')));
 
