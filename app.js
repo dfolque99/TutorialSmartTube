@@ -108,7 +108,7 @@ app.get("/info/:id", function(req, res, next) {
 
 app.get('/getLastImage', function (req, res) {
 	var retorn = {
-		url: 'https://tutorialsmarttube.blob.core.windows.net/mycontainer/image'+lastImage
+		url: 'https://tutorialsmarttube.blob.core.windows.net/mycontainer/image'+lastImage+".png"
 	};
 	res.end(JSON.stringify(retorn));
 });
@@ -175,8 +175,8 @@ app.post('/upload', function(req, res){
 	  }
 	});
 	lastImage = (lastImage+1)%20;
-	var name = 'image'+lastImage;
-	blobService.createBlockBlobFromLocalFile('mycontainer', name+'.png', file.path, function(error, result, response) {
+	var name = 'image'+lastImage+'.png';
+	blobService.createBlockBlobFromLocalFile('mycontainer', name, file.path, function(error, result, response) {
 	  if (!error) {
 	    // file uploaded
 	  }
