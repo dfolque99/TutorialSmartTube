@@ -45,7 +45,7 @@ app.get("/sumaViatges/:id", function(req, res, next) {
 	console.log("usuari " + req.params.id + " suma " + req.query.viatges + " viatges");
 	res.writeHead(200, {'Content-Type': 'application/json; charset=utf-8'});
 	initConnection( function(con) {
-		var str = "UPDATE users SET viatges = viatges + "+req.query.viatges + " WHERE id = " + req.params.id;
+		var str = "UPDATE users SET viatges = viatges + "+req.query.viatges + " WHERE id = '" + req.params.id+"'";
 		request = new Request(str, function(err) {  
 			if (err) { console.log(err);}  
 		});
@@ -66,7 +66,7 @@ app.get("/register/:id", function(req, res, next) {
 			if (err) { console.log(err);}  
 		});
 		request.addParameter('mac', TYPES.NVarChar,req.query.mac);
-        request.addParameter('id', TYPES.NVarChar , ""+req.params.id);  
+        request.addParameter('id', TYPES.NVarChar , "'"+req.params.id+"'");  
         request.addParameter('nom', TYPES.NVarChar, req.query.nom);  
         request.addParameter('viatges', TYPES.Int,req.query.viatges);
 		request.on('doneProc', function() {
@@ -82,7 +82,8 @@ app.get("/info/:id", function(req, res, next) {
   res.writeHead(200, {'Content-Type': 'application/json; charset=utf-8'});
   initConnection( function(con) {
 	    console.log('iniciem select');
-		request = new Request("SELECT * FROM users WHERE id = "+req.params.id, function(err, rowCount, rowCount2) {  
+		console.log("SELECT * FROM users WHERE id = '"+req.params.id+"'");
+		request = new Request("SELECT * FROM users WHERE id = '"+req.params.id+"'", function(err, rowCount, rowCount2) {  
 			if (err) { console.log(err);}  
 			console.log('rowCount: ' + rowCount + " " + rowCount2);
 		});
