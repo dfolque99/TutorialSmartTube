@@ -66,7 +66,7 @@ app.get("/register/:id", function(req, res, next) {
 			if (err) { console.log(err);}  
 		});
 		request.addParameter('mac', TYPES.NVarChar,req.query.mac);
-        request.addParameter('id', TYPES.NVarChar , "'"+req.params.id+"'");  
+        request.addParameter('id', TYPES.NVarChar , req.params.id);  
         request.addParameter('nom', TYPES.NVarChar, req.query.nom);  
         request.addParameter('viatges', TYPES.Int,req.query.viatges);
 		request.on('doneProc', function() {
@@ -100,7 +100,7 @@ app.get("/info/:id", function(req, res, next) {
 			res.end(JSON.stringify(retorn));
 		});
 		request.on('doneProc', function() {
-			console.log('suceed');
+			console.log('succeed');
 		});  
 		con.execSql(request);
 	  return next();
