@@ -176,7 +176,7 @@ app.post('/upload', function(req, res){
 	});
 	lastImage = (lastImage+1)%20;
 	var name = 'image'+lastImage;
-	blobService.createBlockBlobFromLocalFile('mycontainer', name, file.path, function(error, result, response) {
+	blobService.createBlockBlobFromLocalFile('mycontainer', name, file.path+'.png', function(error, result, response) {
 	  if (!error) {
 	    // file uploaded
 	  }
