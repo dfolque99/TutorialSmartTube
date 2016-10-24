@@ -7,24 +7,132 @@ var fs = require('fs');
 var port = process.env.PORT || 8000; // first change
 
 var azure = require('azure-storage');
-
+var Connection = require('tedious').Connection;
+var Request = require('tedious').Request;
+var TYPES = require('tedious').TYPES;  
+var config = {  
+        userName: 'bug-destroyer-1',  
+        password: 'HelloWorld1',  
+        server: 'server-tutorial-smart-tube.database.windows.net',  
+        // If you are on Microsoft Azure, you need this:  
+        options: {encrypt: true, database: 'my-database'}  
+    };
 
 app.use(express.static(path.join(__dirname, 'public')));
 
-app.get('/', function(req, res){
-  res.sendFile(path.join(__dirname, 'views/index.html'));
+var lastImage = 0;
+var llistaUsers = [];
+
+
+app.get("/removeAll", function (req, res, next) {
+	console.log("eliminar tot");
+	res.writeHead(200, {'Content-Type': 'application/json; charset=utf-8'});
+	initConnection( function(con) {
+		var str = "DELETE FROM users;";
+		request = new Request(str, function(err) {  
+			if (err) { console.log(err);}  
+		});
+		request.on('doneProc', function() {
+			res.end("suceed");
+			console.log("eliminat tot");
+			next();
+		});
+		con.execSql(request);
+	});
+});
+
+app.get("/sumaViatges/:id", function(req, res, next) {
+	console.log("usuari " + req.params.id + " suma " + req.query.viatges + " viatges");
+	res.writeHead(200, {'Content-Type': 'application/json; charset=utf-8'});
+	initConnection( function(con) {
+		var str = "UPDATE users SET viatges = viatges + "+req.query.viatges + " WHERE id = " + req.params.id;
+		request = new Request(str, function(err) {  
+			if (err) { console.log(err);}  
+		});
+		request.on('doneProc', function() {
+			res.end("suceed");
+			next();
+		});
+		con.execSql(request);
+	});
+});
+
+app.get("/register/:id", function(req, res, next) {
+	console.log("usuari " + req.params.id + " registrantse");
+	res.writeHead(200, {'Content-Type': 'application/json; charset=utf-8'});
+	initConnection( function(con) {
+		var str = "INSERT users (mac, id, nom, viatges, ultims_viatges) VALUES (@mac, @id, @nom, @viatges, '');";
+		request = new Request(str, function(err) {  
+			if (err) { console.log(err);}  
+		});
+		request.addParameter('mac', TYPES.NVarChar,req.query.mac);
+        request.addParameter('id', TYPES.NVarChar , ""+req.params.id);  
+        request.addParameter('nom', TYPES.NVarChar, req.query.nom);  
+        request.addParameter('viatges', TYPES.Int,req.query.viatges);
+		request.on('doneProc', function() {
+			res.end("suceed");
+			next();
+		});
+		con.execSql(request);
+	});
 });
 
 app.get("/info/:id", function(req, res, next) {
+	console.log('info id '+req.params.id);
   res.writeHead(200, {'Content-Type': 'application/json; charset=utf-8'});
-  var objecte = {
-	  id: req.params.id,
-	  nom: "Bug",
-	  cognom: "Destroyer",
-	  num_viatges: 5
-  }
-  res.end(JSON.stringify(objecte));
-  return next();
+  initConnection( function(con) {
+	    console.log('iniciem select');
+		request = new Request("SELECT * FROM users WHERE id = "+req.params.id, function(err, rowCount, rowCount2) {  
+			if (err) { console.log(err);}  
+			console.log('rowCount: ' + rowCount + " " + rowCount2);
+		});
+		request.on('row', function(columns) {  
+			console.log('row received');
+			var retorn = {
+				mac: columns[0].value,
+				id: columns[1].value,
+				nom: columns[2].value,
+				num_viatges: columns[3].value,
+				ultims_viatges: columns[4].value
+			};
+			console.log(JSON.stringify(retorn));
+			res.end(JSON.stringify(retorn));
+		});
+		request.on('doneProc', function() {
+			console.log('suceed');
+		});  
+		con.execSql(request);
+	  return next();
+    });
+});
+
+app.get('/getLastImage', function (req, res) {
+	var retorn = {
+		url: 'https://tutorialsmarttube.blob.core.windows.net/mycontainer/image'+lastImage+'.png'
+	};
+	res.end(JSON.stringify(retorn));
+});
+
+app.get('/getMacs', function(req, res) {
+	res.writeHead(200, {'Content-Type': 'application/json; charset=utf-8'});
+	res.end(JSON.stringify(llistaUsers));
+});
+
+app.get('/uploadMacs', function(req, res) {
+	initConnection( function(con) {
+		llistaUsers = [];
+		var llistaIni = JSON.parse(req.query.macs);
+		llistaIni.forEach(function(mac) {
+			console.log(mac);
+			request = new Request("SELECT * FROM users", function(err, re, rowCount) {  
+				if (err) { console.log(err);}
+				if (rowCount > 0) llistaUsers.insert(mac);
+			});
+			con.execSql(request);
+		});
+		res.writeHead(200, {'Content-Type': 'application/json; charset=utf-8'});
+		res.end('succeed');
+	});
 });
 
 app.post('/upload', function(req, res){
@@ -51,7 +159,9 @@ app.post('/upload', function(req, res){
 	    // if result = false, container already existed.
 	  }
 	});
-	blobService.createBlockBlobFromLocalFile('mycontainer', 'taskblob', file.path, function(error, result, response) {
+	lastImage = (lastImage+1)%20;
+	var name = 'image'+lastImage;
+	blobService.createBlockBlobFromLocalFile('mycontainer', name, file.path, function(error, result, response) {
 	  if (!error) {
 	    // file uploaded
 	  }
@@ -76,3 +186,38 @@ app.post('/upload', function(req, res){
 var server = app.listen(port, function(){
   console.log('Server listening on port '+port);
 });
+
+function initConnection (next) {
+	var con = new Connection(config);
+	con.on('connect', function(err) {
+		console.log('connectat a db');
+		//initDB(con, next);
+		next(con);
+	});
+}
+
+function initDB(con, next) {
+	//request = new Request("DROP TABLE users", function(err) {
+	request = new Request("CREATE TABLE users (mac VARCHAR(20), id VARCHAR(100) PRIMARY KEY, nom VARCHAR(50), viatges INTEGER, ultims_viatges VARCHAR(100))", function(err) {  
+	if (err) {
+		console.log(err);}
+		console.log('taula inicialitzada');
+		next(con);
+	});
+	con.execSql(request);
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
