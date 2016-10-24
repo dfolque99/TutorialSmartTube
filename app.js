@@ -115,7 +115,7 @@ app.get('/getLastImage', function (req, res) {
 
 app.get('/getMacs', function(req, res) {
 	res.writeHead(200, {'Content-Type': 'application/json; charset=utf-8'});
-	res.end(JSON.stringify(llistaUsers));
+	res.end(JSON.stringify({macs: llistaUsers}));
 });
 
 app.get('/uploadMacs', function(req, res) {
