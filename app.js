@@ -108,7 +108,7 @@ app.get("/info/:id", function(req, res, next) {
 
 app.get('/getLastImage', function (req, res) {
 	var retorn = {
-		url: 'https://tutorialsmarttube.blob.core.windows.net/mycontainer/image'+lastImage+'.png'
+		url: 'https://tutorialsmarttube.blob.core.windows.net/mycontainer/image'+lastImage
 	};
 	res.end(JSON.stringify(retorn));
 });
