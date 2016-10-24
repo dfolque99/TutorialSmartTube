@@ -119,21 +119,36 @@ app.get('/getMacs', function(req, res) {
 });
 
 app.get('/uploadMacs', function(req, res) {
-	initConnection( function(con) {
-		llistaUsers = [];
-		var llistaIni = JSON.parse(req.query.macs);
-		llistaIni.forEach(function(mac) {
-			console.log(mac);
-			request = new Request("SELECT * FROM users", function(err, re, rowCount) {  
-				if (err) { console.log(err);}
-				if (rowCount > 0) llistaUsers.insert(mac);
-			});
-			con.execSql(request);
+	console.log('info id '+req.params.id);
+  res.writeHead(200, {'Content-Type': 'application/json; charset=utf-8'});
+  initConnection( function(con) {
+	  var llistaTots = []
+	    console.log('iniciem select');
+		request = new Request("SELECT * FROM users", function(err, rowCount, rowCount2) {
+			if (err) { console.log(err);}  
+			console.log('rowCount: ' + rowCount + " " + rowCount2);
 		});
-		res.writeHead(200, {'Content-Type': 'application/json; charset=utf-8'});
-		res.end('succeed');
-	});
+		request.on('row', function(columns) {  
+			console.log('row received');
+			llistaTots.push(columns[0].value);
+		});
+		request.on('doneProc', function() {
+			llistaUsers = intersect(llistaTots, JSON.parse(req.query.macs));
+			console.log('suceed');
+			res.end('coincideixen ' + JSON.stringify(llistaUsers));
+		});  
+		con.execSql(request);
+    });
 });
+
+function intersect(a, b) {
+    var t;
+    if (b.length > a.length) t = b, b = a, a = t; // indexOf to loop over shorter
+    return a.filter(function (e) {
+        if (b.indexOf(e) !== -1) return true;
+    });
+}
+
 
 app.post('/upload', function(req, res){
 
